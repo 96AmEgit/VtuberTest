@@ -4,8 +4,8 @@ import json
 import socket  # ★UDP通信用のライブラリを追加
 
 # --- UDP通信の設定 ---
-UDP_IP = "127.0.0.1"  # 自分自身のPC（ローカルホスト）を指定
-UDP_PORT = 5005       # Unity側と一致させるポート番号
+UDP_IP = "192.168.40.15" #unity側のIPアドレス
+UDP_PORT = 5005      # Unity側と一致させるポート番号
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDPソケットの作成
 
 # MediaPipeの準備
