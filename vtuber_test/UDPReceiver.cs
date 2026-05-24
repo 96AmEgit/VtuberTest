@@ -82,13 +82,13 @@ public class UDPReceiver : MonoBehaviour
     // JSONから特定の数値を抜き出すための簡易関数
     private float ExtractValue(string json, string part, string axis)
     {
-        int partIndex = json.indexOf("\"" + part + "\"");
-        int axisIndex = json.indexOf("\"" + axis + "\"", partIndex);
-        int colonIndex = json.indexOf(":", axisIndex);
-        int commaIndex = json.indexOf(",", colonIndex);
-        if (commaIndex == -1 || commaIndex > json.indexOf("}", colonIndex))
+        int partIndex = json.IndexOf("\"" + part + "\"");
+        int axisIndex = json.IndexOf("\"" + axis + "\"", partIndex);
+        int colonIndex = json.IndexOf(":", axisIndex);
+        int commaIndex = json.IndexOf(",", colonIndex);
+        if (commaIndex == -1 || commaIndex > json.IndexOf("}", colonIndex))
         {
-            commaIndex = json.indexOf("}", colonIndex);
+            commaIndex = json.IndexOf("}", colonIndex);
         }
         string valueStr = json.Substring(colonIndex + 1, commaIndex - colonIndex - 1);
         return float.Parse(valueStr.Trim());
