@@ -28,34 +28,26 @@ public class UDPReceiver : MonoBehaviour
         receiveThread.Start();
     }
 
-    void Update()
-    {
-        // データの受信があったら、メインスレッド（Update内）でオブジェクトに反映
-        if (isDataReceived && !string.IsNullOrEmpty(latestJsonData))
-        {
-            try
-            {
-                // 簡易的な文字列解析（JsonUtilityの制限を避けるため、今回はNOSEのXYZを文字検索で強引に抽出）
-                // 本格的にはNewtonsoft Jsonなどの外部ライブラリを使うと綺麗に直せます
-                if (latestJsonData.Contains("NOSE"))
-                {
-                    float x = ExtractValue(latestJsonData, "NOSE", "x");
-                    float y = ExtractValue(latestJsonData, "NOSE", "y");
-                    float z = ExtractValue(latestJsonData, "NOSE", "z");
+    // 動かしたいターゲットをユニティちゃんの「Head」にする
+public Transform headBone; 
+float smoothedX, smoothedY;
 
-                    // Unityの座標系に変換（MediaPipeの0~1の中心を0にするため0.5を引く）
-                    Vector3 newPosition = new Vector3((x - 0.5f) * multiplier, (y - 0.5f) * multiplier, z * multiplier);
-                    
-                    // オブジェクトを動かす
-                    targetObject.position = newPosition;
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogError("データ反映エラー: " + e.Message);
-            }
-            isDataReceived = false;
-        }
+void Update() {
+    if (isDataReceived) {
+        float rawX = ExtractValue(latestJsonData, "NOSE", "x");
+        float rawY = ExtractValue(latestJsonData, "NOSE", "y");
+
+        // Lerpで滑らかにする (0.1fを小さくするほどゆっくり、大きくするとキビキビ動く)
+        smoothedX = Mathf.Lerp(smoothedX, rawX, 0.1f);
+        smoothedY = Mathf.Lerp(smoothedY, rawY, 0.1f);
+
+        // 位置ではなく回転に変換する例（鼻が右に行ったら頭を右に30度向ける、など）
+        float yaw = (smoothedX - 0.5f) * 60f;   // 左右
+        float pitch = (smoothedY - 0.5f) * 40f; // 上下
+        
+        headBone.localRotation = Quaternion.Euler(pitch, yaw, 0);
+    }
+}
     }
 
     // バックグラウンドで常に動き続ける受信処理
